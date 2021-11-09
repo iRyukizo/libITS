@@ -1,0 +1,13 @@
+StateSpace RefineWMG-PT-002002 flat
+../bin/its-reach --gc-threshold 2000000 --quiet -i test_models/cgal/RefineWMG-PT-002002.flat.gal -t CGAL --stats     
+
+its-reach command run as :
+
+../bin/its-reach  --gc-threshold  2000000  --quiet  -i  test_models/cgal/RefineWMG-PT-002002.gal  -t  CGAL  --stats  
+Model ,|S| ,Time ,Mem(kb) ,fin. SDD ,fin. DDD ,peak SDD ,peak DDD ,SDD Hom ,SDD cache peak ,DDD Hom ,DDD cachepeak ,SHom cache
+petri\_inst\_inst\_mod\_flat,58320,0.079882,9260,10,26,9731,4213,44,19862,40,23193,0
+ Total reachable state count : 58320
+
+Max variable value : 7
+Maximum sum along a path : 20
+Exact state count : 58320

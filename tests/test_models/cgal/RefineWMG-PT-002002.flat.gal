@@ -1,0 +1,72 @@
+
+gal petri_inst_inst{
+  int p = 0;
+  int pprime = 7;
+  int psecond = 5;
+  int pterce = 0;
+  int p1 = 0;
+  int p2 = 0;
+  int p3 = 2;
+  int p4 = 2;
+  int p5 = 0;
+  int p6 = 0;
+  int p7 = 0;
+  int p8 = 2;
+  int p9 = 2;
+  int p10 = 0;
+  transition t [ p1 >= 5 ] {
+    pprime += 5    ;
+    p1 -= 5    ;
+  }
+  transition tprime [ pterce >= 3 ] {
+    psecond += 3    ;
+    pterce -= 3    ;
+  }
+  transition tsecond [ pprime >= 2 && psecond >= 2 ] {
+    psecond -= 2    ;
+    pterce += 2    ;
+    p += 2    ;
+    pprime -= 2    ;
+  }
+  transition t1 [ p3 >= 1 && p4 >= 1 && p6 >= 1 ] {
+    p2 += 1    ;
+    p3 -= 1    ;
+    p5 += 1    ;
+    p6 -= 1    ;
+    p4 -= 1    ;
+    p1 += 1    ;
+  }
+  transition t2 [ p2 >= 1 ] {
+    p2 -= 1    ;
+    p3 += 1    ;
+  }
+  transition t3 [ p5 >= 1 ] {
+    p5 -= 1    ;
+    p4 += 1    ;
+  }
+  transition t4 [ p4 >= 1 ] {
+    p5 += 1    ;
+    p4 -= 1    ;
+  }
+  transition t5 [ p >= 1 && p8 >= 1 && p9 >= 1 ] {
+    p8 -= 1    ;
+    p9 -= 1    ;
+    p10 += 1    ;
+    p -= 1    ;
+    p6 += 1    ;
+    p7 += 1    ;
+  }
+  transition t6 [ p7 >= 1 ] {
+    p8 += 1    ;
+    p7 -= 1    ;
+  }
+  transition t7 [ p10 >= 1 ] {
+    p9 += 1    ;
+    p10 -= 1    ;
+  }
+  transition t8 [ p9 >= 1 ] {
+    p9 -= 1    ;
+    p10 += 1    ;
+  }
+}
+main petri_inst_inst ;
