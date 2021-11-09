@@ -3,6 +3,7 @@
 
 #include "ddd/SDD.h"
 #include "ddd/DDD.h"
+#include "its/Ordering.hh"
 
 #include <gmpxx.h>
 
@@ -16,14 +17,21 @@ private:
   cache_t cache;
 
   bool firstError;
+
+  const std::unordered_map<std::string,int> * mapRed;
+  const its::VarOrder * vo;
 public : 
-  ExactStateCounter  () : scache(),cache(),firstError(false) {}
+  ExactStateCounter  () : scache(),cache(),firstError(false),mapRed(nullptr),vo(nullptr) {}
   const stat_t & compute (const GSDD & reach) ;
   const stat_t & compute (const GDDD & reach) ;
   const stat_t & compute (const DataSet * ev) ;
 
   void clear () { cache.clear(); scache.clear(); }
   void printStats (const stat_t & stat, std::ostream & out) const ;
+  void setReductionInfo (const std::unordered_map<std::string,int> * mapRed, const its::VarOrder * vo) {
+	  this->mapRed=mapRed;
+	  this->vo = vo;
+  }
 };
 
 

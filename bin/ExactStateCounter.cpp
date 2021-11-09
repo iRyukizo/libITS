@@ -40,6 +40,19 @@ const ExactStateCounter::stat_t & ExactStateCounter::compute (const GSDD & d) {
   }
 }
 
+#include "gmp.h"
+
+ExactStateCounter::stat_t arrangements (int nbToken, int nbRepresents) {
+	// Number of way of putting m black balls in n boxes
+	// C (n+m-1, m)
+	mpz_t res;
+	mpz_init(res);
+	mpz_bin_uiui(res, nbRepresents+ nbToken -1, nbToken);
+	ExactStateCounter::stat_t resmpz(res);
+	mpz_clear(res);
+	return resmpz;
+}
+
 const ExactStateCounter::stat_t & ExactStateCounter::compute (const GDDD & d) {
   if (d == GDDD::one || d == GDDD::top) {
     return one_stat();
@@ -51,10 +64,25 @@ const ExactStateCounter::stat_t & ExactStateCounter::compute (const GDDD & d) {
 
   if( access.empty() ) {
     // miss
-    stat_t res = 0;
-    for(GDDD::const_iterator gi=d.begin();gi!=d.end();++gi) {
-      const stat_t & childStat = compute (gi->second);
-      res += childStat;
+	  stat_t res = 0;
+	  for(GDDD::const_iterator gi=d.begin();gi!=d.end();++gi) {
+		  const stat_t & childStat = compute (gi->second);
+		  // check if we have multiplier for this variable
+		  if (mapRed != nullptr) {
+			  auto it = mapRed->find(vo->getLabel(d.variable()));
+			  if (it != mapRed->end()) {
+				  // we do have multiplier
+				  int val = gi->first;
+				  stat_t nbTotal = arrangements (val, it->second);
+				  std::cout << "Found total " <<  nbTotal << std::endl;
+				  res += nbTotal * childStat;
+				  std::cout << "Found res " << res << std::endl;
+			  } else {
+				  res += childStat;
+			  }
+		  } else {
+			  res += childStat;
+		  }
     }
     cache.insert(access,d);
     access->second = res;
