@@ -161,6 +161,7 @@ void usage() {
   cerr<<  "    -maxbound XXXX,YYYY : return the maximum value for each variable in the list (comma separated)" <<endl;
   cerr<<  "    -reachable XXXX : test if there are reachable states that verify the provided boolean expression over variables" <<endl;
   cerr<<  "    -reachable-from XXXX : Consider that initial states are (reachable from initial) states satisfying the given predicate." <<endl;
+  cerr<< "     -aggregate FILE: TODO" << endl;
   cerr<<  "    -with-invariant XXXX : only states satisfying the provided boolean invariant are considered successors of a state." <<endl;
   cerr<<  "    -reachable-file XXXX.prop : evaluate reachability properties specified by XXX.prop." <<endl;
   cerr<<  "    --init-gadget : suppose that the initial state is actually a precursor of initial states, i.e. initial states are successors of the initial state. (prototype flag, only used in manywitness scenario currently, may be replaced by another mechanism in future).)" << endl;
@@ -219,6 +220,7 @@ int main_noex (int argc, char **argv) {
    return 1;
  }
 
+ vLabal aggregate_file="";
  vLabel reachExpr="";
  vLabel fromExpr="";
  vLabel boundsExpr="";
@@ -243,6 +245,10 @@ int main_noex (int argc, char **argv) {
      if (++i > argc) 
        { cerr << "give argument value for BMC depth " << args[i-1]<<endl; usage() ; exit(1);}
      BMC = atoi(args[i]); 
+   } else if (! strcmp(args[i],"-aggregate") ) {
+     if (++i > argc) 
+       { cerr << "give argument for aggregate FILE " << args[i-1]<<endl; usage() ; exit(1);}
+     aggregate_file = atoi(args[i]); 
    } else if (! strcmp(args[i],"-wgo") ) {
      if (++i > argc)
        { cerr << "give argument value for witness graph path " << args[i-1]<<endl; usage() ; exit(1);}
