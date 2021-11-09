@@ -1,0 +1,114 @@
+
+gal Tu0_flat{
+  int p = 0;
+  int pprime = 7;
+  int p1 = 0;
+  int p6 = 0;
+  transition t [ p1 >= 5 ] {
+    pprime += 5    ;
+    p1 -= 5    ;
+  }
+  transition tsecond [ pprime >= 2 ] label "tsecond" {
+    pprime -= 2    ;
+    p += 2    ;
+  }
+  transition t1 [ p6 >= 1 ] label "t1" {
+    p6 -= 1    ;
+    p1 += 1    ;
+  }
+  transition t5 [ p >= 1 ] label "t5" {
+    p6 += 1    ;
+    p -= 1    ;
+  }
+}
+gal Tu1_flat{
+  int psecond = 5;
+  int pterce = 0;
+  transition tprime [ pterce >= 3 ] {
+    psecond += 3    ;
+    pterce -= 3    ;
+  }
+  transition tsecond [ psecond >= 2 ] label "tsecond" {
+    psecond -= 2    ;
+    pterce += 2    ;
+  }
+}
+gal Tu2_flat{
+  int p2 = 0;
+  int p3 = 2;
+  transition t1 [ p3 >= 1 ] label "t1" {
+    p3 -= 1    ;
+    p2 += 1    ;
+  }
+  transition t2 [ p2 >= 1 ] {
+    p3 += 1    ;
+    p2 -= 1    ;
+  }
+}
+gal Tu3_flat{
+  int p4 = 2;
+ // int p5 = 0;
+  transition t1 [ p4 >= 1 ] label "t1" {
+    p4 += 1    ;
+    p4 -= 1    ;
+  }
+//  transition t3 [ p5 >= 1 ] {
+//    p5 -= 1    ;
+//    p4 += 1    ;
+//  }
+//  transition t4 [ p4 >= 1 ] {
+//    p5 += 1    ;
+//    p4 -= 1    ;
+//  }
+}
+gal Tu4_flat{
+  int p7 = 0;
+  int p8 = 2;
+  transition t5 [ p8 >= 1 ] label "t5" {
+    p8 -= 1    ;
+    p7 += 1    ;
+  }
+  transition t6 [ p7 >= 1 ] {
+    p8 += 1    ;
+    p7 -= 1    ;
+  }
+}
+gal Tu5_flat{
+  int p9 = 2;
+//  int p10 = 0;
+  transition t5 [ p9 >= 1 ] label "t5" {
+    p9 += 1    ;
+    p9 -= 1    ;
+  }
+//  transition t7 [ p10 >= 1 ] {
+//    p10 -= 1    ;
+//    p9 += 1    ;
+//  }
+//  transition t8 [ p9 >= 1 ] {
+//    p10 += 1    ;
+//    p9 -= 1    ;
+//  }
+}
+composite petri_inst_inst_mod_flat {
+  Tu0_flat u0;
+  Tu1_flat u1;
+  Tu2_flat u2;
+  Tu3_flat u3;
+  Tu4_flat u4;
+  Tu5_flat u5;
+  synchronization tsecond label "" {
+    u0."tsecond" ;
+    u1."tsecond" ;
+  }
+  synchronization t1 label "" {
+    u0."t1" ;
+    u2."t1" ;
+    u3."t1" ;
+  }
+  synchronization t5 label "" {
+    u0."t5" ;
+    u4."t5" ;
+    u5."t5" ;
+  }
+}
+main petri_inst_inst_mod_flat ;
