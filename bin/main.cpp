@@ -220,7 +220,7 @@ int main_noex (int argc, char **argv) {
    return 1;
  }
 
- vLabal aggregate_file="";
+ vLabel aggregate_file="";
  vLabel reachExpr="";
  vLabel fromExpr="";
  vLabel boundsExpr="";
