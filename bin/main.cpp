@@ -248,7 +248,7 @@ int main_noex (int argc, char **argv) {
    } else if (! strcmp(args[i],"-aggregate") ) {
      if (++i > argc) 
        { cerr << "give argument for aggregate FILE " << args[i-1]<<endl; usage() ; exit(1);}
-     aggregate_file = atoi(args[i]); 
+     aggregate_file = args[i]; 
    } else if (! strcmp(args[i],"-wgo") ) {
      if (++i > argc)
        { cerr << "give argument value for witness graph path " << args[i-1]<<endl; usage() ; exit(1);}
