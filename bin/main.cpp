@@ -30,6 +30,7 @@
 #include "Property.hh"
 #include "SMTExporter.hh"
 #include "Graph.hh"
+#include "aggregation.hh"
 
 #ifdef HASH_STAT
 #include "its/gal/ExprHom.hpp"
@@ -383,6 +384,7 @@ int main_noex (int argc, char **argv) {
    ExactStateCounter mc ;
    if (aggregate_file != "") {
 	   // parse the aggregate file.
+           Aggregation agg(aggregate_file);
 
 	   // configure the state counter appropriately.
 	   std::unordered_map<string,int> mapRed;
