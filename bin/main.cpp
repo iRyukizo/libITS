@@ -385,11 +385,8 @@ int main_noex (int argc, char **argv) {
    if (aggregate_file != "") {
 	   // parse the aggregate file.
            Aggregation agg(aggregate_file);
+           std::unordered_map<string, int> mapRed = agg.process();
 
-	   // configure the state counter appropriately.
-	   std::unordered_map<string,int> mapRed;
-	   mapRed["p4"] = 2;
-	   mapRed["p9"] = 2;
 	   mc.setReductionInfo(&mapRed, model.getInstance()->getType()->getVarOrder());
 	   ExactStateCounter::stat_t stat = mc.compute(reachable);
 	   mc.printStats(stat, std::cout);

@@ -4,13 +4,13 @@ Aggregation::Aggregation(const std::string &filename)
     : filename_(filename)
 {}
 
-std::map<std::string, int> Aggregation::process()
+std::unordered_map<std::string, int> Aggregation::process()
 {
     std::ifstream file(filename_);
     if (!file.is_open())
         throw std::ios_base::failure("Couln't open file " + filename_);
 
-    std::map<std::string, int> map;
+    std::unordered_map<std::string, int> map;
     std::string line;
     int nb_lines = 0;
     while (!std::getline(file, line).eof())
