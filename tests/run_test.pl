@@ -5,12 +5,14 @@ open IN, "< $ARGV[0]";
 
 
 my $title = <IN>;
+my $statespace = ($title =~ /StateSpace /);
 chomp $title;
 my $call = <IN>;
 chomp $call;
 
 my $header;
 my @nominal ;
+my $exactstatcounter = 0;
 
 while (my $line = <IN>) {
   if ($line =~ /Model ,\|S\| /) {
@@ -18,6 +20,12 @@ while (my $line = <IN>) {
       $line = <IN> or die "Unexpected end of file after stats readout";
       chomp $line;
       @nominal = split (/\,/,$line);
+      if (!$statespace) {
+          last;
+      }
+  }
+  if ($line =~ /Exact state count :/) {
+      ($exactstatcounter) = ($line =~ /Exact state count : (\d+)/);
       last;
   }
 }
@@ -30,6 +38,7 @@ close IN;
 print "##teamcity[testStarted name='$title']\n";
 
 my @tested;
+my $testexactstatcounter = 0;
 
 my @outputs = ();
 my @results = `$call`;
@@ -41,6 +50,12 @@ while (my $line = shift(@results)) {
     $line = shift(@results) or die "Unexpected end of file after stats readout";
     chomp $line;
     @tested = split (/\,/,$line);
+    if (!$statespace) {
+        last;
+    }
+  }
+  if ($line =~ /Exact state count :/) {
+    ($testexactstatcounter) = ($line =~ /Exact state count : (\d+)/);
     last;
   }
 }
@@ -60,6 +75,10 @@ if ( @nominal[1] != @tested[1] ) {
   print "\n##teamcity[testFailed name='$title' message='regression detected' details='' expected='@nominal[1]' actual='@tested[1]'] \n";
   print "Expected :  @nominal[1]  Obtained :  @tested[1] \n";
   $returnvalue = 1;
+} elsif ( $exactstatcounter != $testexactstatcounter ) {
+  print "@outputs\n";
+  print "\n##teamcity[testFailed name='$title' message='regression detected' details='Exact state count' expected='$exactstatcounter' actual='$testexactstatcounter'] \n";
+  print "Expected : $exactstatcounter Obtained : $testexactstatcounter \n";
 } elsif ( $failure ) {
   print "@outputs\n";
   print "\n##teamcity[testFailed name='$title' message='test did not exit properly' details='' expected='@nominal[1]' actual='@tested[1]'] \n";
