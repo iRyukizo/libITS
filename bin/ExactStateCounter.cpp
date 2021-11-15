@@ -74,9 +74,7 @@ const ExactStateCounter::stat_t & ExactStateCounter::compute (const GDDD & d) {
 				  // we do have multiplier
 				  int val = gi->first;
 				  stat_t nbTotal = arrangements (val, it->second);
-				  std::cout << "Found total " <<  nbTotal << std::endl;
 				  res += nbTotal * childStat;
-				  std::cout << "Found res " << res << std::endl;
 			  } else {
 				  res += childStat;
 			  }
