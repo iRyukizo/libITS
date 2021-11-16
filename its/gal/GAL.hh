@@ -129,6 +129,7 @@ public :
 
   vars_it vars_begin() const { return variables_.begin() ; }
   vars_it vars_end() const { return variables_.end() ; }
+  size_t vars_size() const { return variables_.size() ; }
   arrays_it arrays_begin() const { return arrays_.begin() ; }
   arrays_it arrays_end() const { return arrays_.end() ; }
   trans_it trans_begin() const { return transitions_.begin() ; }
