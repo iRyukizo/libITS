@@ -17,6 +17,12 @@
 #include "its/petri/JSON2ITS.hh"
 #include "its/parser_json/parse_json.hh"
 
+// Visitor and related stuff
+#include "its/TypeVisitor.hh"
+#include "its/composite/Composite.hh"
+#include "its/gal/GAL.hh"
+
+
 // for stats
 #include "MaxComputer.hh"
 #include "ExactStateCounter.hh"
@@ -31,6 +37,7 @@
 #include "SMTExporter.hh"
 #include "Graph.hh"
 #include "aggregation.hh"
+#include "TreeAggregate.hh"
 
 #ifdef HASH_STAT
 #include "its/gal/ExprHom.hpp"
@@ -387,8 +394,54 @@ int main_noex (int argc, char **argv) {
            Aggregation agg(aggregate_file);
            std::unordered_map<string, int> mapRed = agg.process();
 
-	   mc.setReductionInfo(&mapRed, model.getInstance()->getType()->getVarOrder());
-	   ExactStateCounter::stat_t stat = mc.compute(reachable);
+           // now resolve variables in case of depth in the specification
+           pType main = model.getInstance()->getType();
+
+           class AggregateBuilderTypeVisitor : public its::BasicTypeVisitor {
+
+           public :
+        	   IAggregate * result;
+        	   AggregateBuilderTypeVisitor():result(nullptr){}
+
+        	   void visitComposite (const class Composite & comp) {
+        		   result = new CompositeAggregate(comp.comps_size());
+        		   size_t childIndex=0;
+        		   for (auto it = comp.comps_begin(), _end=comp.comps_end() ; it != _end ; ++it, ++childIndex) {
+        			   auto & inst = *it;
+        			   pType subType = inst.getType();
+        			   AggregateBuilderTypeVisitor vchild;
+
+        			   subType->visit(& vchild);
+
+        			   result->setChild(childIndex, vchild.result);
+        		   }
+        	   }
+
+        	   void visitGAL (const class GAL & gal) {
+        		   result = new FlatAggregate (gal.vars_size());
+        	   }
+           };
+
+           AggregateBuilderTypeVisitor visitor;
+           model.getInstance()->getType()->visit(& visitor);
+           IAggregate * tree = visitor.result;
+
+           for (auto & kv : mapRed) {
+        	   // e.g. [2,0,1] => var 1, comp 0, comp 3
+        	   Type::varindex_t indexv;
+        	   main->getVarIndex(indexv, kv.first);
+
+        	   size_t aggCount = kv.second;
+
+        	   IAggregate * cur = tree;
+        	   for (size_t i=0; i < indexv.size() - 2; ++i) {
+        		   cur = cur->getChild(indexv.at(i));
+        	   }
+    		   cur->setAggregateCount(indexv.at(indexv.size()-1), aggCount);
+           }
+
+           mc.setReductionInfo(tree);
+	   ExactStateCounter::stat_t stat = mc.compute(reachable, tree);
 	   mc.printStats(stat, std::cout);
    } else {
 	   ExactStateCounter::stat_t stat = mc.compute(reachable);
