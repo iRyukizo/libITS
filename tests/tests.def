@@ -155,5 +155,5 @@ StateSpace RefineWMG-PT-002002
 StateSpace RefineWMG-PT-002002 flat
 ../bin/its-reach --gc-threshold 2000000 --quiet -i test_models/cgal/RefineWMG-PT-002002.flat.gal -t CGAL --stats
 StateSpace RefineWMG-PT-002002 flat red
-../bin/its-reach --gc-threshold 2000000 --quiet -i test_models/cgal/RefineWMG-PT-002002.flat.red.gal -t CGAL --stats -aggregate test_models/cgal/RefineWMG-PT-002002.agg
+../bin/its-reach --gc-threshold 2000000 --quiet -i test_models/cgal/RefineWMG-PT-002002.flat.red.gal -t CGAL --stats -aggregate test_models/cgal/RefineWMG-PT-002002.flat.agg
 
