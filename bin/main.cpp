@@ -439,7 +439,7 @@ int main_noex (int argc, char **argv) {
         	   }
     		   cur->setAggregateCount(indexv.at(indexv.size()-1), aggCount);
            }
-
+           tree->print(std::cout);
            mc.setReductionInfo(tree);
 	   ExactStateCounter::stat_t stat = mc.compute(reachable, tree);
 	   mc.printStats(stat, std::cout);
