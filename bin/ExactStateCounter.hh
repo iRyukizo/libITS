@@ -6,31 +6,31 @@
 #include "its/Ordering.hh"
 
 #include <gmpxx.h>
+#include "TreeAggregate.hh"
 
 class ExactStateCounter {
 public :
   typedef mpz_class stat_t;
 private:
-  typedef ext_hash_map<GSDD, stat_t> scache_t;
+  typedef ext_hash_map<IAggregate*, stat_t> smap_t;
+  typedef ext_hash_map<GSDD, smap_t > scache_t;
   scache_t scache;
-  typedef ext_hash_map<GDDD, stat_t> cache_t;
+  typedef ext_hash_map<GDDD, smap_t > cache_t;
   cache_t cache;
 
   bool firstError;
 
-  const std::unordered_map<std::string,int> * mapRed;
-  const its::VarOrder * vo;
+  const IAggregate * tree;
 public : 
-  ExactStateCounter  () : scache(),cache(),firstError(false),mapRed(nullptr),vo(nullptr) {}
-  const stat_t & compute (const GSDD & reach) ;
-  const stat_t & compute (const GDDD & reach) ;
-  const stat_t & compute (const DataSet * ev) ;
+  ExactStateCounter  () : scache(),cache(),firstError(false),tree(nullptr) {}
+  const stat_t & compute (const GSDD & reach, IAggregate * agg=nullptr) ;
+  const stat_t & compute (const GDDD & reach, IAggregate * agg=nullptr) ;
+  const stat_t & compute (const DataSet * ev, IAggregate * agg=nullptr) ;
 
   void clear () { cache.clear(); scache.clear(); }
   void printStats (const stat_t & stat, std::ostream & out) const ;
-  void setReductionInfo (const std::unordered_map<std::string,int> * mapRed, const its::VarOrder * vo) {
-	  this->mapRed=mapRed;
-	  this->vo = vo;
+  void setReductionInfo (IAggregate *tree) {
+	  this->tree = tree;
   }
 };
 

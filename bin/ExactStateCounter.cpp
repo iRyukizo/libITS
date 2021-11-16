@@ -13,25 +13,35 @@ const ExactStateCounter::stat_t & zero_stat (){
 
 
 
-const ExactStateCounter::stat_t & ExactStateCounter::compute (const GSDD & d) {
+const ExactStateCounter::stat_t & ExactStateCounter::compute (const GSDD & d, IAggregate * agg) {
   if (d == GSDD::one || d == GSDD::top) {
     return one_stat();
   } else if (d == GSDD::null) {
     return zero_stat();
   }
-  scache_t::accessor access;  
-  scache.find(access,d);
 
+  scache_t::accessor accessFirst;
+  scache.find(accessFirst,d);
+  if (accessFirst.empty()) {
+	  scache.insert(accessFirst, d);
+	  accessFirst->second = smap_t();
+  }
+  smap_t & map = accessFirst->second;
+
+  smap_t::accessor access;
+  map.find(access, agg);
   if( access.empty() ) {
     // miss
     stat_t res = 0;
-    for(GSDD::const_iterator gi=d.begin();gi!=d.end();++gi) {
-      stat_t childStat = compute (gi->second);
-      const stat_t & edgeStat = compute (gi->first);
+    size_t childIndex = 0;
+    for(GSDD::const_iterator gi=d.begin();gi!=d.end();++gi,++childIndex) {
+      stat_t childStat = compute (gi->second, agg);
+      const stat_t & edgeStat = compute (gi->first, agg==NULL ? NULL : agg->getChild(childIndex));
       stat_t prod = childStat * edgeStat ;
       res = res  + prod ;
     }
-    scache.insert(access,d);
+
+    map.insert(access,agg);
     access->second = res ;
     return access->second;
   } else {
@@ -53,27 +63,36 @@ ExactStateCounter::stat_t arrangements (int nbToken, int nbRepresents) {
 	return resmpz;
 }
 
-const ExactStateCounter::stat_t & ExactStateCounter::compute (const GDDD & d) {
+const ExactStateCounter::stat_t & ExactStateCounter::compute (const GDDD & d, IAggregate * agg) {
   if (d == GDDD::one || d == GDDD::top) {
     return one_stat();
   } else if (d == GDDD::null) {
     return zero_stat();
   }
-  cache_t::accessor access;  
-  cache.find(access,d);
+
+  cache_t::accessor accessFirst;
+  cache.find(accessFirst,d);
+  if (accessFirst.empty()) {
+	  cache.insert(accessFirst, d);
+	  accessFirst->second = smap_t();
+  }
+  smap_t & map = accessFirst->second;
+
+  smap_t::accessor access;
+  map.find(access, agg);
 
   if( access.empty() ) {
     // miss
 	  stat_t res = 0;
 	  for(GDDD::const_iterator gi=d.begin();gi!=d.end();++gi) {
-		  const stat_t & childStat = compute (gi->second);
+		  const stat_t & childStat = compute (gi->second, agg);
 		  // check if we have multiplier for this variable
-		  if (mapRed != nullptr) {
-			  auto it = mapRed->find(vo->getLabel(d.variable()));
-			  if (it != mapRed->end()) {
+		  if (agg != nullptr) {
+			  size_t represents = agg->getAggregateCount(d.variable());
+			  if (represents != 1) {
 				  // we do have multiplier
 				  int val = gi->first;
-				  stat_t nbTotal = arrangements (val, it->second);
+				  stat_t nbTotal = arrangements (val, represents);
 				  res += nbTotal * childStat;
 			  } else {
 				  res += childStat;
@@ -82,7 +101,8 @@ const ExactStateCounter::stat_t & ExactStateCounter::compute (const GDDD & d) {
 			  res += childStat;
 		  }
     }
-    cache.insert(access,d);
+
+    map.insert(access,agg);
     access->second = res;
     return access->second;
   } else {
@@ -92,13 +112,13 @@ const ExactStateCounter::stat_t & ExactStateCounter::compute (const GDDD & d) {
 }
 
 
-const ExactStateCounter::stat_t & ExactStateCounter::compute (const DataSet* g)
+const ExactStateCounter::stat_t & ExactStateCounter::compute (const DataSet* g, IAggregate * agg)
 {
     // Used to work for referenced DDD
     if (typeid(*g) == typeid(GSDD) ) {
-      return compute ( GSDD ((SDD &) *g) );
+      return compute ( GSDD ((SDD &) *g), agg );
     } else if (typeid(*g) == typeid(DDD)) {
-      return compute ( GDDD ((DDD &) *g) );
+      return compute ( GDDD ((DDD &) *g), agg );
       //    } else if (typeid(*g) == typeid(IntDataSet)) {
       // nothing, no nodes for this implem
       //return stat_t();
