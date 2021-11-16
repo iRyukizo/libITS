@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 #include <memory>
 
 class IAggregate {
@@ -19,6 +20,7 @@ public :
 	virtual size_t getAggregateCount (size_t varIndex) const =0;
 	virtual size_t hash() const = 0;
 	virtual bool operator==(const IAggregate & o) const = 0;
+	virtual void print(std::ostream & os) const = 0;
 };
 
 class FlatAggregate : public IAggregate {
@@ -58,6 +60,16 @@ public :
 			const FlatAggregate * fa = (const FlatAggregate *) & o;
 			return represents == fa->represents;
 		}
+	}
+	void print(std::ostream & os) const {
+		os << "Flat :" ;
+		bool first = true;
+		for (int i : represents) {
+			if (first) first=false;
+			else os << ",";
+			os << i;
+		}
+		os << std::endl;
 	}
 };
 
@@ -106,6 +118,16 @@ public :
 			}
 			return true;
 		}
+	}
+	void print(std::ostream & os) const {
+		os << "Composite :" ;
+		bool first = true;
+		for (const auto & i : children) {
+			if (first) first=false;
+			else os << ",";
+			i->print(os);
+		}
+		os << std::endl;
 	}
 };
 
